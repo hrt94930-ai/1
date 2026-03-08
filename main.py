@@ -24,7 +24,7 @@ qiwi = Qiwi(config.qiwi_secret_token)
 qiwi_withdraw = QiwiWithdraw(config.qiwi_withdraw_token)
 checking_banker = False
 
-Thread(target=start_mailings, args=()).start()
+# Thread(target=start_mailings, args=()).start()
 
 
 @app.callback_query_handler(lambda query: json.loads(query.data)['action'] == "back")
