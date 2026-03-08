@@ -11,12 +11,14 @@ from telebot import TeleBot
 from config import *
 from database import Database
 
-app = TeleBot(token)
+# Создаем экземпляр бота для передачи в Database
+bot = TeleBot(token)
 
 
 def start_mailings():
     while True and main_thread().is_alive():
-        db = Database()
+        # Передаем фиктивный user_id (например, 0) и экземпляр бота
+        db = Database(0, bot)
         now = int(datetime.now(timezone(timedelta(hours=3))).timestamp())
         mailings = db.get_mailings_to_send(now)
         for mailing in mailings:
