@@ -1,0 +1,4 @@
+psutil~=5.8.0
+pyTelegramBotAPI~=3.7.6
+requests~=2.25.1
+Telethon~=1.20
