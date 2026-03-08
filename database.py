@@ -16,7 +16,50 @@ class Database:
         self.register_user()
     
     def create_tables(self):
-        """Создание необходимых таблиц в базе данных"""
+           def migrate_database(self):
+        """Обновление структуры базы данных до актуальной версии"""
+        try:
+            # Проверяем структуру таблицы deals
+            self.cursor.execute("PRAGMA table_info(deals)")
+            columns = self.cursor.fetchall()
+            column_names = [col[1] for col in columns]
+            
+            # Если есть колонка reg_date, но нет date - нужно обновить
+            if 'reg_date' in column_names and 'date' not in column_names:
+                print("Обновляем структуру таблицы deals...")
+                
+                # Создаем временную таблицу с правильной структурой
+                self.cursor.execute('''
+                    CREATE TABLE deals_new (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        buyer INTEGER,
+                        seller INTEGER,
+                        sum INTEGER,
+                        info TEXT,
+                        status TEXT,
+                        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                ''')
+                
+                # Копируем данные из старой таблицы, переименовывая reg_date в date
+                self.cursor.execute('''
+                    INSERT INTO deals_new (id, buyer, seller, sum, info, status, date)
+                    SELECT id, buyer, seller, sum, info, status, reg_date FROM deals
+                ''')
+                
+                # Удаляем старую таблицу
+                self.cursor.execute("DROP TABLE deals")
+                
+                # Переименовываем новую таблицу
+                self.cursor.execute("ALTER TABLE deals_new RENAME TO deals")
+                
+                self.conn.commit()
+                print("Таблица deals успешно обновлена")
+            
+            # Проверяем другие таблицы при необходимости
+            
+        except Exception as e:
+            print(f"Ошибка при миграции базы данных: {e}")
         
         # Таблица пользователей
         self.cursor.execute('''
